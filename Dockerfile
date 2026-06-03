@@ -27,11 +27,12 @@ COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 COPY --from=builder /app/package.json ./package.json
 
-RUN mkdir -p /app/prisma && chown -R nextjs:nodejs /app/prisma
+RUN mkdir -p /data && chown -R nextjs:nodejs /data /app/prisma
 
 USER nextjs
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+ENV DATABASE_URL="file:/data/bucketlist.db"
 
 CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]

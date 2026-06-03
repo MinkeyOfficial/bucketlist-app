@@ -1,13 +1,22 @@
 services:
   app:
     build: .
+    container_name: bucketlist-app
+    restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
-      - JWT_SECRET=change-me-in-production
-      - DATABASE_URL=file:./dev.db
+      - NODE_ENV=production
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
+      - DATABASE_URL=file:/data/bucketlist.db
     volumes:
-      - db-data:/app/prisma
+      - db-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/auth/me"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
 volumes:
   db-data:
