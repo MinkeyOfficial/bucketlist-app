@@ -26,7 +26,7 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/package.json ./package.json
 
-RUN npm install prisma --no-save && mkdir -p /data && chown -R nextjs:nodejs /data /app/prisma
+RUN NODE_ENV=development npm install prisma --no-save && mkdir -p /data && chown -R nextjs:nodejs /data /app/prisma
 
 USER nextjs
 EXPOSE 3000
