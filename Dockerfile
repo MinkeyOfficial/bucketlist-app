@@ -24,10 +24,9 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 COPY --from=builder /app/package.json ./package.json
 
-RUN mkdir -p /data && chown -R nextjs:nodejs /data /app/prisma
+RUN npm install prisma --no-save && mkdir -p /data && chown -R nextjs:nodejs /data /app/prisma
 
 USER nextjs
 EXPOSE 3000
@@ -35,4 +34,4 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 ENV DATABASE_URL="file:/data/bucketlist.db"
 
-CMD ["sh", "-c", "node node_modules/prisma/build/index.js migrate deploy && node server.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]
