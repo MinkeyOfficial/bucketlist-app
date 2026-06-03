@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
+import ProfileView from "@/components/ProfileView";
 
-export default async function RootPage() {
+export default async function ProfilePage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
-  redirect("/goals");
+  return <ProfileView user={user} />;
 }

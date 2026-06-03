@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  name         String
+  passwordHash String       @map("password_hash")
+  avatarUrl    String?      @map("avatar_url")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  bucketItems  BucketItem[]
+
+  @@map("users")
+}
+
+model BucketItem {
+  id          String      @id @default(cuid())
+  userId      String      @map("user_id")
+  title       String
+  description String?
+  status      ItemStatus  @default(TODO)
+  priority    Int         @default(0)
+  targetDate  DateTime?   @map("target_date")
+  coverImage  Bytes?      @map("cover_image")
+  coverMime   String?     @map("cover_mime")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+  completedAt  DateTime?   @map("completed_at")
+
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  images    ItemImage[]
+  links     ItemLink[]
+  checklist ChecklistItem[]
+
+  @@map("bucket_items")
+}
+
+model ChecklistItem {
+  id        String     @id @default(cuid())
+  itemId    String     @map("item_id")
+  title     String
+  done      Boolean    @default(false)
+  sortOrder Int        @default(0) @map("sort_order")
+  createdAt DateTime   @default(now()) @map("created_at")
+
+  item BucketItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@map("checklist_items")
+}
+
+model ItemImage {
+  id        String     @id @default(cuid())
+  itemId    String     @map("item_id")
+  data      Bytes
+  mimeType  String     @map("mime_type")
+  caption   String?
+  createdAt DateTime   @default(now()) @map("created_at")
+
+  item BucketItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@map("item_images")
+}
+
+model ItemLink {
+  id        String   @id @default(cuid())
+  itemId    String   @map("item_id")
+  url       String
+  title     String?
+  linkType  LinkType @default(OTHER) @map("link_type")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  item BucketItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@map("item_links")
+}
+
+enum ItemStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum LinkType {
+  YOUTUBE
+  WEBSITE
+  OTHER
+}

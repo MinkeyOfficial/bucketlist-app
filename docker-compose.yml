@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - JWT_SECRET=change-me-in-production
+      - DATABASE_URL=file:./dev.db
+    volumes:
+      - db-data:/app/prisma
+
+volumes:
+  db-data:

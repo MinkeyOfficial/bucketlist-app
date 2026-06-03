@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
+import Dashboard from "@/components/Dashboard";
 
-export default async function RootPage() {
+export default async function GoalsPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
-  redirect("/goals");
+  return <Dashboard user={user} />;
 }
